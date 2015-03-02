@@ -32,37 +32,37 @@ class MCP23017(object):
     return __config(pin, 1)
 
   def __config(self, pin, mode):
-    if (pin < 8):
-      self.direction = self._readandchangepin(MCP23017_IODIRA, pin, mode)
+    if pin < 8:
+      self.direction = self._read_and_change_pin(MCP23017_IODIRA, pin, mode)
     else:
-      self.direction |= self._readandchangepin(MCP23017_IODIRB, pin-8, mode) << 8
+      self.direction |= self._read_and_change_pin(MCP23017_IODIRB, pin-8, mode) << 8
     return self.direction
 
   def output(self, pin, value):
-    assert pin >= 0 and pin < self.num_gpios, "Pin number %s is invalid, only 0-%s are valid" % (pin, self.num_gpios)
+    assert 0 <= pin < self.num_gpios, "Pin number %s is invalid, only 0-%s are valid" % (pin, self.num_gpios)
     assert self.direction & (1 << pin) == 0, "Pin %s not set to output" % pin
-    if (pin < 8):
-      self.outputvalue = self._readandchangepin(MCP23017_GPIOA, pin, value, self.i2c.readU8(MCP23017_OLATA))
+    if pin < 8:
+      output_value = self._read_and_change_pin(MCP23017_GPIOA, pin, value, self.i2c.readU8(MCP23017_OLATA))
     else:
-      self.outputvalue = self._readandchangepin(MCP23017_GPIOB, pin-8, value, self.i2c.readU8(MCP23017_OLATB)) << 8
-    return self.outputvalue
+      output_value = self._read_and_change_pin(MCP23017_GPIOB, pin-8, value, self.i2c.readU8(MCP23017_OLATB)) << 8
+    return output_value
 
   def input(self, pin):
-    assert pin >= 0 and pin < self.num_gpios, "Pin number %s is invalid, only 0-%s are valid" % (pin, self.num_gpios)
+    assert 0 <= pin < self.num_gpios, "Pin number %s is invalid, only 0-%s are valid" % (pin, self.num_gpios)
     assert self.direction & (1 << pin) != 0, "Pin %s not set to input" % pin
     value = self.i2c.readU8(MCP23017_GPIOA)
     value |= self.i2c.readU8(MCP23017_GPIOB) << 8
     return value & (1 << pin)
 
-  def _readandchangepin(self, port, pin, value, currvalue = None):
-    assert pin >= 0 and pin < self.num_gpios, "Pin number %s is invalid, only 0-%s are valid" % (pin, self.num_gpios)
-    if not currvalue:
-      currvalue = self.i2c.readU8(port)
-    newvalue = self._changebit(currvalue, pin, value)
-    self.i2c.write8(port, newvalue)
+  def _read_and_change_pin(self, port, pin, value, current_value = None):
+    assert 0 <= pin < self.num_gpios, "Pin number %s is invalid, only 0-%s are valid" % (pin, self.num_gpios)
+    if not current_value:
+      current_value = self.i2c.readU8(port)
+    new_value = self._change_bit(current_value, pin, value)
+    self.i2c.write8(port, new_value)
     return newvalue
 
-  def _changebit(self, bitmap, bit, value):
+  def _change_bit(self, bitmap, bit, value):
     assert value == 1 or value == 0, "Value is %s must be 1 or 0" % value
     if value == 0:
       return bitmap & ~(1 << bit)
@@ -82,36 +82,36 @@ if __name__ == '__main__':
     mcp4.config(i, 0)
 
   try:
-    while (True):
+    while True:
       for i in range(2,14):
         mcp.output(i, 1)  # Pin 0 High
-        time.sleep(1);
+        time.sleep(1)
         mcp.output(i,0)
       for i in range(2,14):
         mcp2.output(i, 1)  # Pin 0 High
-        time.sleep(1);
+        time.sleep(1)
         mcp2.output(i,0)
       for i in range(2,14):
         mcp3.output(i, 1)  # Pin 0 High
-        time.sleep(1);
+        time.sleep(1)
         mcp3.output(i,0)
       for i in range(2,14):
         mcp4.output(i, 1)  # Pin 0 High
-        time.sleep(1);
+        time.sleep(1)
         mcp4.output(i,0)
 
       for i in range(2,14):
         mcp.output(i, 1)  # Pin 0 High
-        time.sleep(0.2);
+        time.sleep(0.2)
       for i in range(2,14):
         mcp2.output(i, 1)  # Pin 0 High
-        time.sleep(0.2);
+        time.sleep(0.2)
       for i in range(2,14):
         mcp3.output(i, 1)  # Pin 0 High
-        time.sleep(0.2);
+        time.sleep(0.2)
       for i in range(2,14):
         mcp4.output(i, 1)  # Pin 0 High
-        time.sleep(0.2);
+        time.sleep(0.2)
   except KeyboardInterrupt:
     for i in range(2,14):
       mcp.output(i,0)
