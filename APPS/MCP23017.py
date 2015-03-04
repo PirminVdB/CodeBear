@@ -26,12 +26,6 @@ class MCP23017(object):
         self.i2c.write8(MCP23017_GPPUA, 0x00)
         self.i2c.write8(MCP23017_GPPUB, 0x00)
 
-    def set_pin_to_output(self, pin):
-        return __config(pin, 0)
-
-    def set_pin_to_input(self, pin):
-        return __config(pin, 1)
-
     def __config(self, pin, mode):
         if pin < 8:
             self.direction = self._read_and_change_pin(MCP23017_IODIRA, pin, mode)
@@ -39,9 +33,14 @@ class MCP23017(object):
             self.direction |= self._read_and_change_pin(MCP23017_IODIRB, pin - 8, mode) << 8
         return self.direction
 
+    def set_pin_to_output(self, pin):
+        return self.__config(pin, 0)
+
+    def set_pin_to_input(self, pin):
+        return self.__config(pin, 1)
+
     def output(self, pin, value):
         assert 0 <= pin < self.num_gpios, "Pin number %s is invalid, only 0-%s are valid" % (pin, self.num_gpios)
-        assert self.direction & (1 << pin) == 0, "Pin %s not set to output" % pin
         if pin < 8:
             output_value = self._read_and_change_pin(MCP23017_GPIOA, pin, value, self.i2c.readU8(MCP23017_OLATA))
         else:
@@ -51,7 +50,6 @@ class MCP23017(object):
 
     def input(self, pin):
         assert 0 <= pin < self.num_gpios, "Pin number %s is invalid, only 0-%s are valid" % (pin, self.num_gpios)
-        assert self.direction & (1 << pin) != 0, "Pin %s not set to input" % pin
         value = self.i2c.readU8(MCP23017_GPIOA)
         value |= self.i2c.readU8(MCP23017_GPIOB) << 8
         return value & (1 << pin)
@@ -79,10 +77,10 @@ if __name__ == '__main__':
     mcp4 = MCP23017(address=0x24)
 
     for i in range(0, 15):
-        mcp.config(i, 0)
-        mcp2.config(i, 0)
-        mcp3.config(i, 0)
-        mcp4.config(i, 0)
+        mcp.set_pin_to_output(i)
+        mcp2.set_pin_to_output(i)
+        mcp3.set_pin_to_output(i)
+        mcp4.set_pin_to_output(i)
 
     try:
         while True:

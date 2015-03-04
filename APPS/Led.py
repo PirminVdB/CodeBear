@@ -9,6 +9,9 @@ class RGBLed(object):
         self.red_pin = red_pin
         self.green_pin = green_pin
         self.blue_pin = blue_pin
+        self.mcp.set_pin_to_output(self.red_pin)
+        self.mcp.set_pin_to_output(self.green_pin)
+        self.mcp.set_pin_to_output(self.blue_pin)
         self.turn_off()
 
     def set_color(self, red, green, blue):
@@ -17,7 +20,7 @@ class RGBLed(object):
         self.mcp.output(self.blue_pin, blue)
 
     def turn_off(self):
-        self.set_color(False, False, False)
+        self.set_color(0, 0, 0)
 '''
     def __set_red(self, value):
         assert value == True or value == False , "red led value should be a boolean"
