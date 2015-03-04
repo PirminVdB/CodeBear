@@ -1,11 +1,12 @@
 __author__ = 'Pirmin'
 
-MAX_BRIGHTNESS = 256
+MAX_BRIGHTNESS = 255
+MIN_BRIGHTNESS = 0
 
 class Led(object):
 
     def __init__(self):
-        self.brightness = 0
+        self.brightness = MIN_BRIGHTNESS
 
     def set_color(self, red, green, blue):
         self.set_red(red)
@@ -13,14 +14,14 @@ class Led(object):
         self.set_blue(blue)
 
     def set_brightness(self, brightness):
-        assert 0 <= brightness <= MAX_BRIGHTNESS  , "brightness of led %s is invalid, brightness must be between 0 and 256 with borders" % brightness
+        assert MIN_BRIGHTNESS <= brightness <= MAX_BRIGHTNESS  , "brightness of led %s is invalid, brightness must be between %s and %s with borders" % (brightness, MIN_BRIGHTNESS, MAX_BRIGHTNESS)
         self.brightness = brightness
 
     def get_brightness(self):
         return self.red
 
     def turn_off(self):
-        self.set_brightness(0)
+        self.set_brightness(MIN_BRIGHTNESS)
 
     def turn_on(self):
         self.set_brightness(MAX_BRIGHTNESS)
