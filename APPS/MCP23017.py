@@ -62,7 +62,7 @@ class MCP23017(object):
             current_value = self.i2c.readU8(port)
         new_value = self._change_bit(current_value, pin, value)
         self.i2c.write8(port, new_value)
-        return newvalue
+        return new_value
 
     def _change_bit(self, bitmap, bit, value):
         assert value == 1 or value == 0, "Value is %s must be 1 or 0" % value
