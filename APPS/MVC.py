@@ -5,11 +5,11 @@ class Model():
         self.change_listeners = dict()
         self.change_event = ChangeEvent(self)
 
-    def add_change_listener(self, change_listener):
-        self.listeners[change_listener.__class__] = change_listener
+    def add_change_listener(self, name, change_listener):
+        self.change_listeners[name] = change_listener
 
-    def remove_change_listener(self, change_listener):
-        del self.change_listeners[change_listener.__class__]
+    def remove_change_listener(self, name):
+        del self.change_listeners[name]
 
     def _fire_state_changed(self):
         for change_listener in self.change_listeners.values():
