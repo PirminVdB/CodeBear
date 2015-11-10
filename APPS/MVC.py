@@ -1,4 +1,5 @@
 __author__ = 'PirminVDB'
+import abc
 
 class Model():
     def __init__(self):
@@ -31,5 +32,6 @@ Defines an object which listens for ChangeEvents.
 http://docs.oracle.com/javase/7/docs/api/javax/swing/event/ChangeListener.html#stateChanged%28javax.swing.event.ChangeEvent%29
 '''
 class ChangeListener():
+    @abc.abstractmethod
     def state_changed(self, change_event):
         pass
